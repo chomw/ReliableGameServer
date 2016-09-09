@@ -1,0 +1,17 @@
+package ls_packet;
+
+message Ping
+{
+	required int32 ping = 1;
+}
+
+message ServerAddress
+{
+	required bytes host = 1;
+	required int32 port = 2;
+}
+
+message GameStart
+{
+	required int32 type = 1;
+}

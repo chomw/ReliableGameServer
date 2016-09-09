@@ -1,0 +1,10 @@
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\bin\Release\UnitTestClient.exe.config
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\bin\Release\UnitTestClient.exe
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\bin\Release\UnitTestClient.pdb
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\bin\Release\protobuf-net.dll
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\bin\Release\RgsClient.dll
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\bin\Release\SimpleJson.dll
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\bin\Release\RgsClient.pdb
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\obj\Release\UnitTestClient.exe
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\obj\Release\UnitTestClient.pdb
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\obj\Release\UnitTestClient.csprojResolveAssemblyReference.cache

@@ -1,0 +1,16 @@
+C:\Users\조민우\Desktop\server_lib\branches\UnitTestClient\RgsClient\bin\Debug\RgsClient.dll
+C:\Users\조민우\Desktop\server_lib\branches\UnitTestClient\RgsClient\bin\Debug\RgsClient.pdb
+C:\Users\조민우\Desktop\server_lib\branches\UnitTestClient\RgsClient\bin\Debug\protobuf-net.dll
+C:\Users\조민우\Desktop\server_lib\branches\UnitTestClient\RgsClient\bin\Debug\SimpleJson.dll
+C:\Users\조민우\Desktop\server_lib\branches\UnitTestClient\RgsClient\obj\Debug\RgsClient.csprojResolveAssemblyReference.cache
+C:\Users\조민우\Desktop\server_lib\branches\UnitTestClient\RgsClient\obj\Debug\RgsClient.dll
+C:\Users\조민우\Desktop\server_lib\branches\UnitTestClient\RgsClient\obj\Debug\RgsClient.pdb
+C:\Personal\rgs\branches\UnitTestClient\RgsClient\bin\Debug\RgsClient.dll
+C:\Personal\rgs\branches\UnitTestClient\RgsClient\bin\Debug\RgsClient.pdb
+C:\Personal\rgs\branches\UnitTestClient\RgsClient\bin\Debug\protobuf-net.dll
+C:\Personal\rgs\branches\UnitTestClient\RgsClient\bin\Debug\SimpleJson.dll
+C:\Personal\rgs\branches\UnitTestClient\RgsClient\obj\Debug\RgsClient.dll
+C:\Personal\rgs\branches\UnitTestClient\RgsClient\obj\Debug\RgsClient.pdb
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\Plugins\RgsClient.dll
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\Plugins\RgsClient.pdb
+C:\Personal\rgs\branches\UnitTestClient\RgsClient\obj\Debug\RgsClient.csprojResolveAssemblyReference.cache

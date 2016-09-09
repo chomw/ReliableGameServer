@@ -1,0 +1,35 @@
+package Auth;
+
+message Join
+{
+	required bytes id = 1;
+	required bytes password = 2;
+}
+
+message JoinResult
+{
+	required bool result = 1;
+}
+
+message Login
+{
+	required bytes id = 1;
+	required bytes password = 2;
+}
+
+message LoginResult
+{
+	required bool result = 1;
+}
+
+message LoginResult_2
+{
+	required bool result = 1;
+	required bytes id = 2;
+}
+
+message Logout
+{
+	required bytes id = 1;
+	required bytes password = 2;
+}

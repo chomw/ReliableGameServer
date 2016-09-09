@@ -1,0 +1,17 @@
+c:\users\조민우\documents\visual studio 2015\Projects\UnitTestClient\UnitTestClient\bin\Debug\UnitTestClient.exe.config
+C:\Users\조민우\Desktop\server_lib\branches\UnitTestClient\UnitTestClient\bin\Debug\UnitTestClient.exe.config
+C:\Users\조민우\Desktop\server_lib\branches\UnitTestClient\UnitTestClient\bin\Debug\UnitTestClient.exe
+C:\Users\조민우\Desktop\server_lib\branches\UnitTestClient\UnitTestClient\bin\Debug\UnitTestClient.pdb
+C:\Users\조민우\Desktop\server_lib\branches\UnitTestClient\UnitTestClient\obj\Debug\UnitTestClient.csprojResolveAssemblyReference.cache
+C:\Users\조민우\Desktop\server_lib\branches\UnitTestClient\UnitTestClient\obj\Debug\UnitTestClient.exe
+C:\Users\조민우\Desktop\server_lib\branches\UnitTestClient\UnitTestClient\obj\Debug\UnitTestClient.pdb
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\bin\Debug\UnitTestClient.exe.config
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\obj\Debug\UnitTestClient.exe
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\obj\Debug\UnitTestClient.pdb
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\bin\Debug\UnitTestClient.exe
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\bin\Debug\UnitTestClient.pdb
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\bin\Debug\protobuf-net.dll
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\bin\Debug\RgsClient.dll
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\bin\Debug\SimpleJson.dll
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\bin\Debug\RgsClient.pdb
+C:\Personal\rgs\branches\UnitTestClient\UnitTestClient\obj\Debug\UnitTestClient.csprojResolveAssemblyReference.cache

@@ -1,0 +1,7 @@
+C:\Personal\rgs\branches\UnitTestClient\RgsClient\obj\Release\RgsClient.csprojResolveAssemblyReference.cache
+C:\Personal\rgs\branches\UnitTestClient\RgsClient\bin\Release\RgsClient.dll
+C:\Personal\rgs\branches\UnitTestClient\RgsClient\bin\Release\RgsClient.pdb
+C:\Personal\rgs\branches\UnitTestClient\RgsClient\bin\Release\protobuf-net.dll
+C:\Personal\rgs\branches\UnitTestClient\RgsClient\bin\Release\SimpleJson.dll
+C:\Personal\rgs\branches\UnitTestClient\RgsClient\obj\Release\RgsClient.dll
+C:\Personal\rgs\branches\UnitTestClient\RgsClient\obj\Release\RgsClient.pdb
