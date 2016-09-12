@@ -33,144 +33,138 @@
     <ClInclude Include="stdafx.h">
       <Filter>lib_rgs</Filter>
     </ClInclude>
-    <ClInclude Include="rgs\src\helper\MiniDump.h">
+    <ClInclude Include="..\include\rgs\io\proactor\Acceptor.h">
+      <Filter>lib_rgs\src\io\proactor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\io\proactor\Act.h">
+      <Filter>lib_rgs\src\io\proactor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\io\proactor\Actor.h">
+      <Filter>lib_rgs\src\io\proactor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\io\proactor\Connector.h">
+      <Filter>lib_rgs\src\io\proactor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\io\proactor\Disconnector.h">
+      <Filter>lib_rgs\src\io\proactor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\io\proactor\Proactor.h">
+      <Filter>lib_rgs\src\io\proactor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\io\proactor\Receiver.h">
+      <Filter>lib_rgs\src\io\proactor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\io\proactor\Sender.h">
+      <Filter>lib_rgs\src\io\proactor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\io\Connection.h">
+      <Filter>lib_rgs\src\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\io\NetworkEngine.h">
+      <Filter>lib_rgs\src\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\io\Session.h">
+      <Filter>lib_rgs\src\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\io\Socket.h">
+      <Filter>lib_rgs\src\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\protocol\json.hpp">
+      <Filter>lib_rgs\src\protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\protocol\JsonProtocol.h">
+      <Filter>lib_rgs\src\protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\protocol\Protobuf.h">
+      <Filter>lib_rgs\src\protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\protocol\Protocol.h">
+      <Filter>lib_rgs\src\protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\thread\SingleThread.h">
+      <Filter>lib_rgs\src\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\thread\Synchronous.h">
+      <Filter>lib_rgs\src\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\thread\ThreadPool.h">
+      <Filter>lib_rgs\src\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\helper\MiniDump.h">
       <Filter>lib_rgs\src\helper</Filter>
     </ClInclude>
-    <ClInclude Include="rgs\src\helper\Logger.h">
+    <ClInclude Include="..\include\rgs\helper\Statistics.h">
       <Filter>lib_rgs\src\helper</Filter>
     </ClInclude>
-    <ClInclude Include="rgs\src\helper\MemoryPool.h">
-      <Filter>lib_rgs\src\helper</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\callback\Callback.h">
+    <ClInclude Include="..\include\rgs\callback\Callback.h">
       <Filter>lib_rgs\src\callback</Filter>
     </ClInclude>
-    <ClInclude Include="rgs\src\protocol\Protocol.h">
-      <Filter>lib_rgs\src\protocol</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\helper\Statistics.h">
-      <Filter>lib_rgs\src\helper</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\thread\Synchronous.h">
-      <Filter>lib_rgs\src\Thread</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\thread\ThreadPool.h">
-      <Filter>lib_rgs\src\Thread</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\thread\SingleThread.h">
-      <Filter>lib_rgs\src\Thread</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\io\Connection.h">
-      <Filter>lib_rgs\src\io</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\io\NetworkEngine.h">
-      <Filter>lib_rgs\src\io</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\io\Session.h">
-      <Filter>lib_rgs\src\io</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\io\Socket.h">
-      <Filter>lib_rgs\src\io</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\Application.h">
-      <Filter>lib_rgs\src</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\io\proactor\Acceptor.h">
-      <Filter>lib_rgs\src\io\proactor</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\io\proactor\Act.h">
-      <Filter>lib_rgs\src\io\proactor</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\io\proactor\Actor.h">
-      <Filter>lib_rgs\src\io\proactor</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\io\proactor\Connector.h">
-      <Filter>lib_rgs\src\io\proactor</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\io\proactor\Disconnector.h">
-      <Filter>lib_rgs\src\io\proactor</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\io\proactor\Proactor.h">
-      <Filter>lib_rgs\src\io\proactor</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\io\proactor\Receiver.h">
-      <Filter>lib_rgs\src\io\proactor</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\io\proactor\Sender.h">
-      <Filter>lib_rgs\src\io\proactor</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\protocol\Protobuf.h">
-      <Filter>lib_rgs\src\protocol</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\protocol\json.hpp">
-      <Filter>lib_rgs\src\protocol</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\protocol\JsonProtocol.h">
-      <Filter>lib_rgs\src\protocol</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\Common.h">
-      <Filter>lib_rgs\src</Filter>
-    </ClInclude>
-    <ClInclude Include="rgs\src\callback\Callbacks.h">
+    <ClInclude Include="..\include\rgs\callback\Callbacks.h">
       <Filter>lib_rgs\src\callback</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\Application.h">
+      <Filter>lib_rgs\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rgs\Common.h">
+      <Filter>lib_rgs\src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>lib_rgs</Filter>
     </ClCompile>
-    <ClCompile Include="rgs\src\helper\MiniDump.cpp">
-      <Filter>lib_rgs\src\helper</Filter>
+    <ClCompile Include="..\include\rgs\io\proactor\Acceptor.cpp">
+      <Filter>lib_rgs\src\io\proactor</Filter>
     </ClCompile>
-    <ClCompile Include="rgs\src\helper\Statistics.cpp">
-      <Filter>lib_rgs\src\helper</Filter>
+    <ClCompile Include="..\include\rgs\io\proactor\Act.cpp">
+      <Filter>lib_rgs\src\io\proactor</Filter>
     </ClCompile>
-    <ClCompile Include="rgs\src\thread\Synchronous.cpp">
+    <ClCompile Include="..\include\rgs\io\proactor\Connector.cpp">
+      <Filter>lib_rgs\src\io\proactor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\rgs\io\proactor\Disconnector.cpp">
+      <Filter>lib_rgs\src\io\proactor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\rgs\io\proactor\Proactor.cpp">
+      <Filter>lib_rgs\src\io\proactor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\rgs\io\proactor\Receiver.cpp">
+      <Filter>lib_rgs\src\io\proactor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\rgs\io\proactor\Sender.cpp">
+      <Filter>lib_rgs\src\io\proactor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\rgs\io\Connection.cpp">
+      <Filter>lib_rgs\src\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\rgs\io\NetworkEngine.cpp">
+      <Filter>lib_rgs\src\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\rgs\io\Session.cpp">
+      <Filter>lib_rgs\src\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\rgs\io\Socket.cpp">
+      <Filter>lib_rgs\src\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\rgs\protocol\JsonProtocol.cpp">
+      <Filter>lib_rgs\src\protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\rgs\protocol\Protobuf.cpp">
+      <Filter>lib_rgs\src\protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\rgs\thread\Synchronous.cpp">
       <Filter>lib_rgs\src\Thread</Filter>
     </ClCompile>
-    <ClCompile Include="rgs\src\io\Connection.cpp">
-      <Filter>lib_rgs\src\io</Filter>
+    <ClCompile Include="..\include\rgs\helper\MiniDump.cpp">
+      <Filter>lib_rgs\src\helper</Filter>
     </ClCompile>
-    <ClCompile Include="rgs\src\io\NetworkEngine.cpp">
-      <Filter>lib_rgs\src\io</Filter>
+    <ClCompile Include="..\include\rgs\helper\Statistics.cpp">
+      <Filter>lib_rgs\src\helper</Filter>
     </ClCompile>
-    <ClCompile Include="rgs\src\io\Session.cpp">
-      <Filter>lib_rgs\src\io</Filter>
-    </ClCompile>
-    <ClCompile Include="rgs\src\io\Socket.cpp">
-      <Filter>lib_rgs\src\io</Filter>
-    </ClCompile>
-    <ClCompile Include="rgs\src\Application.cpp">
+    <ClCompile Include="..\include\rgs\Application.cpp">
       <Filter>lib_rgs\src</Filter>
     </ClCompile>
-    <ClCompile Include="rgs\src\io\proactor\Acceptor.cpp">
-      <Filter>lib_rgs\src\io\proactor</Filter>
-    </ClCompile>
-    <ClCompile Include="rgs\src\io\proactor\Act.cpp">
-      <Filter>lib_rgs\src\io\proactor</Filter>
-    </ClCompile>
-    <ClCompile Include="rgs\src\io\proactor\Connector.cpp">
-      <Filter>lib_rgs\src\io\proactor</Filter>
-    </ClCompile>
-    <ClCompile Include="rgs\src\io\proactor\Disconnector.cpp">
-      <Filter>lib_rgs\src\io\proactor</Filter>
-    </ClCompile>
-    <ClCompile Include="rgs\src\io\proactor\Proactor.cpp">
-      <Filter>lib_rgs\src\io\proactor</Filter>
-    </ClCompile>
-    <ClCompile Include="rgs\src\io\proactor\Receiver.cpp">
-      <Filter>lib_rgs\src\io\proactor</Filter>
-    </ClCompile>
-    <ClCompile Include="rgs\src\io\proactor\Sender.cpp">
-      <Filter>lib_rgs\src\io\proactor</Filter>
-    </ClCompile>
-    <ClCompile Include="rgs\src\protocol\Protobuf.cpp">
-      <Filter>lib_rgs\src\protocol</Filter>
-    </ClCompile>
-    <ClCompile Include="rgs\src\protocol\JsonProtocol.cpp">
-      <Filter>lib_rgs\src\protocol</Filter>
-    </ClCompile>
-    <ClCompile Include="rgs\src\Common.cpp">
+    <ClCompile Include="..\include\rgs\Common.cpp">
       <Filter>lib_rgs\src</Filter>
     </ClCompile>
   </ItemGroup>

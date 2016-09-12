@@ -2,11 +2,13 @@
 #include "GateHandler.h"
 
 #include "Common.h"
-#include "helper/Logger.h"
+
 #include "io/Connection.h"
 #include "io/Session.h"
 
 #include "protocol/JsonProtocol.h"
+
+#include "glog/logging.h"
 
 std::unique_ptr<App> App::instance_ = nullptr;
 
@@ -20,9 +22,9 @@ App& App::instance()
 }
 
 std::vector<std::shared_ptr<rgs::io::Session>> sessions;
-void App::create(rgs::Core core, const std::string& appName, const std::string& version, int loggingLevel, bool consoleLog, DWORD updateInterval)
+void App::create(rgs::Core core, const std::string& appName, const std::string& logPath, DWORD updateInterval)
 {
-	rgs::Application::create(core, appName, version, loggingLevel, consoleLog, updateInterval);
+	rgs::Application::create(core, appName, logPath, updateInterval);
 
 	std::shared_ptr<rgs::io::Listener> connection = std::make_shared<rgs::io::Listener>(7000);
 	connection->initialize(GateHandler::createProtocol(), 5000, 15000);
@@ -58,8 +60,8 @@ void App::create(rgs::Core core, const std::string& appName, const std::string& 
 void App::update()
 {
 	/*std::shared_ptr<rgs::io::Connection> frontend = getConnection("frontend");
-	RGS_LOG(info) << "Frontend Session Size : " << frontend->sessionSize() << ", Connected Size : " << frontend->connectedSize() << ", Wait Size : " << frontend->waitingSize();
+	LOG(ERROR) << "Frontend Session Size : " << frontend->sessionSize() << ", Connected Size : " << frontend->connectedSize() << ", Wait Size : " << frontend->waitingSize();
 
 	std::shared_ptr<rgs::io::Connector> backend = std::dynamic_pointer_cast<rgs::io::Connector>(getConnection("backend"));
-	RGS_LOG(info) << "Backend Session Size : " << backend->sessionSize() << ", Connected Size : " << backend->connectedSize() << ", Wait Size : " << backend->waitingSize();*/
+	LOG(ERROR) << "Backend Session Size : " << backend->sessionSize() << ", Connected Size : " << backend->connectedSize() << ", Wait Size : " << backend->waitingSize();*/
 }

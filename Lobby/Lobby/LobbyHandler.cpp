@@ -31,7 +31,6 @@
 #include "protocol/PacketType.h"
 #include "protocol/Auth.pb.h"
 
-#include "helper/Logger.h"
 #include "io/Session.h"
 #include "protocol/Protocol.h"
 #include "protocol/Protobuf.h"

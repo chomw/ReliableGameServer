@@ -27,7 +27,6 @@
 #include "GateHandler.h"
 #include "Common.h"
 
-#include "helper/Logger.h"
 #include "io/Session.h"
 
 #include "protocol/PacketType.h"
@@ -36,6 +35,8 @@
 #include "protocol/Protocol.h"
 #include "protocol/Protobuf.h"
 #include "protocol/JsonProtocol.h"
+
+#include "glog/logging.h"
 
 #include "App.h"
 

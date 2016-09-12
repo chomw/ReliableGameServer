@@ -2,9 +2,10 @@
 #include "LobbyHandler.h"
 
 #include "Common.h"
-#include "helper/Logger.h"
 #include "io/Connection.h"
 #include "io/Session.h"
+
+#include "glog/logging.h"
 
 std::unique_ptr<App> App::instance_ = nullptr;
 
@@ -17,9 +18,9 @@ App& App::instance()
 	return *instance_.get();
 }
 
-void App::create(rgs::Core core, const std::string& appName, const std::string& version, int loggingLevel, bool consoleLog, DWORD updateInterval)
+void App::create(rgs::Core core, const std::string& appName, const std::string& logPath, DWORD updateInterval)
 {
-	rgs::Application::create(core, appName, version, loggingLevel, consoleLog, updateInterval);
+	rgs::Application::create(core, appName, logPath, updateInterval);
 
 	std::shared_ptr<rgs::io::Listener> connection = std::make_shared<rgs::io::Listener>(8000);
 	connection->initialize(LobbyHandler::createProtocol(), 5000, 15000);

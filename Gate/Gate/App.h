@@ -11,7 +11,7 @@ private:
 public:
 	static App& instance();
 
-	virtual void create(rgs::Core core, const std::string& appName, const std::string& version, int loggingLevel, bool consoleLog, DWORD updateInterval);
+	virtual void create(rgs::Core core, const std::string& appName, const std::string& logPath, DWORD updateInterval);
 
 	virtual void update();
 };

@@ -14,6 +14,8 @@
     <ProjectGuid>{88FF5F9D-34BE-48CC-A2B7-E4709813AB07}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>lib_rgs</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <ProjectName>librgs</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -39,7 +41,12 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)\lib\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)\lib\$(Configuration)\</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -47,7 +54,8 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_SCL_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>rgs/protobuf/src;C:\boost_1_60_0;.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../include/glog/src;../include/protobuf/src;</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -66,7 +74,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_SCL_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>rgs/protobuf/src;C:\boost_1_60_0;.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../include/glog/src;../include/protobuf/src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -82,55 +90,53 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="rgs\src\Application.h" />
-    <ClInclude Include="rgs\src\callback\Callback.h" />
-    <ClInclude Include="rgs\src\callback\Callbacks.h" />
-    <ClInclude Include="rgs\src\Common.h" />
-    <ClInclude Include="rgs\src\helper\Logger.h" />
-    <ClInclude Include="rgs\src\helper\MemoryPool.h" />
-    <ClInclude Include="rgs\src\helper\MiniDump.h" />
-    <ClInclude Include="rgs\src\helper\Statistics.h" />
-    <ClInclude Include="rgs\src\io\Connection.h" />
-    <ClInclude Include="rgs\src\io\NetworkEngine.h" />
-    <ClInclude Include="rgs\src\io\proactor\Acceptor.h" />
-    <ClInclude Include="rgs\src\io\proactor\Act.h" />
-    <ClInclude Include="rgs\src\io\proactor\Actor.h" />
-    <ClInclude Include="rgs\src\io\proactor\Connector.h" />
-    <ClInclude Include="rgs\src\io\proactor\Disconnector.h" />
-    <ClInclude Include="rgs\src\io\proactor\Proactor.h" />
-    <ClInclude Include="rgs\src\io\proactor\Receiver.h" />
-    <ClInclude Include="rgs\src\io\proactor\Sender.h" />
-    <ClInclude Include="rgs\src\io\Session.h" />
-    <ClInclude Include="rgs\src\io\Socket.h" />
-    <ClInclude Include="rgs\src\protocol\json.hpp" />
-    <ClInclude Include="rgs\src\protocol\JsonProtocol.h" />
-    <ClInclude Include="rgs\src\protocol\Protobuf.h" />
-    <ClInclude Include="rgs\src\protocol\Protocol.h" />
-    <ClInclude Include="rgs\src\thread\SingleThread.h" />
-    <ClInclude Include="rgs\src\thread\Synchronous.h" />
-    <ClInclude Include="rgs\src\thread\ThreadPool.h" />
+    <ClInclude Include="..\include\rgs\Application.h" />
+    <ClInclude Include="..\include\rgs\callback\Callback.h" />
+    <ClInclude Include="..\include\rgs\callback\Callbacks.h" />
+    <ClInclude Include="..\include\rgs\Common.h" />
+    <ClInclude Include="..\include\rgs\helper\MiniDump.h" />
+    <ClInclude Include="..\include\rgs\helper\Statistics.h" />
+    <ClInclude Include="..\include\rgs\io\Connection.h" />
+    <ClInclude Include="..\include\rgs\io\NetworkEngine.h" />
+    <ClInclude Include="..\include\rgs\io\proactor\Acceptor.h" />
+    <ClInclude Include="..\include\rgs\io\proactor\Act.h" />
+    <ClInclude Include="..\include\rgs\io\proactor\Actor.h" />
+    <ClInclude Include="..\include\rgs\io\proactor\Connector.h" />
+    <ClInclude Include="..\include\rgs\io\proactor\Disconnector.h" />
+    <ClInclude Include="..\include\rgs\io\proactor\Proactor.h" />
+    <ClInclude Include="..\include\rgs\io\proactor\Receiver.h" />
+    <ClInclude Include="..\include\rgs\io\proactor\Sender.h" />
+    <ClInclude Include="..\include\rgs\io\Session.h" />
+    <ClInclude Include="..\include\rgs\io\Socket.h" />
+    <ClInclude Include="..\include\rgs\protocol\json.hpp" />
+    <ClInclude Include="..\include\rgs\protocol\JsonProtocol.h" />
+    <ClInclude Include="..\include\rgs\protocol\Protobuf.h" />
+    <ClInclude Include="..\include\rgs\protocol\Protocol.h" />
+    <ClInclude Include="..\include\rgs\thread\SingleThread.h" />
+    <ClInclude Include="..\include\rgs\thread\Synchronous.h" />
+    <ClInclude Include="..\include\rgs\thread\ThreadPool.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="rgs\src\Application.cpp" />
-    <ClCompile Include="rgs\src\Common.cpp" />
-    <ClCompile Include="rgs\src\helper\MiniDump.cpp" />
-    <ClCompile Include="rgs\src\helper\Statistics.cpp" />
-    <ClCompile Include="rgs\src\io\Connection.cpp" />
-    <ClCompile Include="rgs\src\io\NetworkEngine.cpp" />
-    <ClCompile Include="rgs\src\io\proactor\Acceptor.cpp" />
-    <ClCompile Include="rgs\src\io\proactor\Act.cpp" />
-    <ClCompile Include="rgs\src\io\proactor\Connector.cpp" />
-    <ClCompile Include="rgs\src\io\proactor\Disconnector.cpp" />
-    <ClCompile Include="rgs\src\io\proactor\Proactor.cpp" />
-    <ClCompile Include="rgs\src\io\proactor\Receiver.cpp" />
-    <ClCompile Include="rgs\src\io\proactor\Sender.cpp" />
-    <ClCompile Include="rgs\src\io\Session.cpp" />
-    <ClCompile Include="rgs\src\io\Socket.cpp" />
-    <ClCompile Include="rgs\src\protocol\JsonProtocol.cpp" />
-    <ClCompile Include="rgs\src\protocol\Protobuf.cpp" />
-    <ClCompile Include="rgs\src\thread\Synchronous.cpp" />
+    <ClCompile Include="..\include\rgs\Application.cpp" />
+    <ClCompile Include="..\include\rgs\Common.cpp" />
+    <ClCompile Include="..\include\rgs\helper\MiniDump.cpp" />
+    <ClCompile Include="..\include\rgs\helper\Statistics.cpp" />
+    <ClCompile Include="..\include\rgs\io\Connection.cpp" />
+    <ClCompile Include="..\include\rgs\io\NetworkEngine.cpp" />
+    <ClCompile Include="..\include\rgs\io\proactor\Acceptor.cpp" />
+    <ClCompile Include="..\include\rgs\io\proactor\Act.cpp" />
+    <ClCompile Include="..\include\rgs\io\proactor\Connector.cpp" />
+    <ClCompile Include="..\include\rgs\io\proactor\Disconnector.cpp" />
+    <ClCompile Include="..\include\rgs\io\proactor\Proactor.cpp" />
+    <ClCompile Include="..\include\rgs\io\proactor\Receiver.cpp" />
+    <ClCompile Include="..\include\rgs\io\proactor\Sender.cpp" />
+    <ClCompile Include="..\include\rgs\io\Session.cpp" />
+    <ClCompile Include="..\include\rgs\io\Socket.cpp" />
+    <ClCompile Include="..\include\rgs\protocol\JsonProtocol.cpp" />
+    <ClCompile Include="..\include\rgs\protocol\Protobuf.cpp" />
+    <ClCompile Include="..\include\rgs\thread\Synchronous.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
