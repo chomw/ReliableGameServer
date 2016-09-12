@@ -23,25 +23,19 @@
     <ClCompile Include="App.cpp">
       <Filter>src\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GateHandler.cpp">
+      <Filter>src\Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="protocol\Auth.pb.cc">
       <Filter>src\Protocol</Filter>
     </ClCompile>
     <ClCompile Include="protocol\ls_packet.pb.cc">
       <Filter>src\Protocol</Filter>
     </ClCompile>
-    <ClCompile Include="GateHandler.cpp">
-      <Filter>src\Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
       <Filter>src\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="protocol\Auth.pb.h">
-      <Filter>src\Protocol</Filter>
-    </ClInclude>
-    <ClInclude Include="protocol\ls_packet.pb.h">
-      <Filter>src\Protocol</Filter>
     </ClInclude>
     <ClInclude Include="protocol\PacketType.h">
       <Filter>src\Protocol</Filter>
@@ -51,6 +45,12 @@
     </ClInclude>
     <ClInclude Include="GateHandler.h">
       <Filter>src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="protocol\Auth.pb.h">
+      <Filter>src\Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="protocol\ls_packet.pb.h">
+      <Filter>src\Protocol</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
