@@ -91,6 +91,7 @@ void Connection::disconnected(std::shared_ptr<rgs::io::Session> session)
 {
 	if (NetworkEngine::instance().getCore() == rgs::Core::SINGLE)
 	{
+		connectedSessions_[session->id()]->dispatch();
 		connectedSessions_.erase(session->id());
 	}
 
