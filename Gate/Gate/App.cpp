@@ -22,33 +22,37 @@ App& App::instance()
 }
 
 std::vector<std::shared_ptr<rgs::io::Session>> sessions;
-void App::create(rgs::Core core, const std::string& appName, const std::string& logPath, DWORD updateInterval)
+void App::create(const std::string& appName, const std::string& logPath, DWORD updateInterval)
 {
-	rgs::Application::create(core, appName, logPath, updateInterval);
+	rgs::Application::create(appName, logPath, updateInterval);
 
-	std::shared_ptr<rgs::io::Listener> connection = std::make_shared<rgs::io::Listener>(7000);
-	connection->initialize(GateHandler::createProtocol(), 5000, 15000);
-	addConnection("frontend", connection);
+	auto protocol = GateHandler::createProtocol();
 
-	std::shared_ptr<rgs::io::Connector> backendConnection = std::make_shared<rgs::io::Connector>(rgs::io::IPAddress("127.0.0.1", 8000));
-	backendConnection->initialize(GateHandler::createProtocol());
-	addConnection("backend", backendConnection);
+	auto createSession = std::make_shared<rgs::io::CreateSession>(protocol);
 
-	connection->registerHandler(rgs::io::IoEvent::IO_EVENT_CONNECTED, [backendConnection](std::shared_ptr<rgs::io::Session> session) {
+	std::shared_ptr<rgs::io::Listener> frontend = std::make_shared<rgs::io::Listener>();
+	frontend->initiate(createSession, 7000);
+	addConnection("frontend", frontend);
 
-		session->useKeepAlive(true);
+	std::shared_ptr<rgs::io::Connector> backend = std::make_shared<rgs::io::Connector>();
+	backend->initiate(createSession, rgs::io::IPAddress("127.0.0.1", 8000));
+	addConnection("backend", backend);
 
-		auto pairSession = backendConnection->getSession();
+	frontend->registerHandler(rgs::io::ConnectionEvent::CONNECTED, [backend](std::shared_ptr<rgs::io::Session> session) {
+
+		session->setTimeout(30000);
+
+		/*auto pairSession = backend->getSession();
 
 		if (pairSession)
 		{
 			session->pairSession = pairSession;
 			pairSession->pairSession = session;
-		}
+		}*/
 
 	});
 
-	connection->registerHandler(rgs::io::IoEvent::IO_EVENT_DISCONNECTED, [backendConnection](std::shared_ptr<rgs::io::Session> session) {
+	frontend->registerHandler(rgs::io::ConnectionEvent::DISCONNECTED, [](std::shared_ptr<rgs::io::Session> session) {
 
 		if (session->pairSession)
 		{
