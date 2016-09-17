@@ -10,7 +10,7 @@ void Connector::procEvent(Act* act, DWORD bytes)
 	rgs::io::Socket* socket = act->socket_;
 	assert(socket);
 
-	socket->complete(rgs::io::IoEvent::IO_EVENT_CONNECTED);
+	socket->complete(rgs::io::ConnectionEvent::CONNECTED);
 	socket->startReceive();
 }
 
@@ -22,5 +22,5 @@ void Connector::procError(Act* act, DWORD error)
 	assert(socket);
 
 	socket->disconnect();
-	socket->complete(rgs::io::IoEvent::IO_EVENT_CONNECTED);
+	socket->complete(rgs::io::ConnectionEvent::CONNECTED);
 }

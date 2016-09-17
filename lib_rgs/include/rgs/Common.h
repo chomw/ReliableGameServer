@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "Mswsock.lib")
@@ -27,20 +27,22 @@
 #include <memory>
 
 #define GLOG_NO_ABBREVIATED_SEVERITIES
-
+/**
+@namespace rgs
+@brief Reliable Game Server ë„¤ì„ìŠ¤í˜ì´ìŠ¤
+@since 1.0.0
+*/
 namespace rgs
 {
-	enum class Core { MULTI, SINGLE };
-
 	enum SocketConfig {
-		BUFFER_SIZE = 8192,			//¹öÆÛ Å©±â
+		BUFFER_SIZE = 8192,			//ë²„í¼ í¬ê¸°
 	};
 
 	enum Error {
-		ERROR_ROW_DATA = 1,			//Àß¸øµÈ RowData ¿¡·¯
-		ERROR_DESERIALIZE = 2,		//deserialize ½ÇÆĞ ¿¡·¯
-		ERROR_DISCONNECTED_SESSION = 3, //¿¬°á Á¾·áµÈ ¼¼¼Ç
-		ERROR_NULL_DATA = 4			//³Î Æ÷ÀÎÅÍ µ¥ÀÌÅÍ·Î ÀÎÇÑ ¿¡·¯
+		ERROR_ROW_DATA = 1,			//ì˜ëª»ëœ RowData ì—ëŸ¬
+		ERROR_DESERIALIZE = 2,		//deserialize ì‹¤íŒ¨ ì—ëŸ¬
+		ERROR_DISCONNECTED_SESSION = 3, //ì—°ê²° ì¢…ë£Œëœ ì„¸ì…˜
+		ERROR_NULL_DATA = 4			//ë„ í¬ì¸í„° ë°ì´í„°ë¡œ ì¸í•œ ì—ëŸ¬
 	};
 
 	class UpDown
@@ -50,9 +52,14 @@ namespace rgs
 		virtual ~UpDown();
 	};
 	
+	/**
+	@namespace io
+	@brief ì…ì¶œë ¥ ê´€ë ¨ ë„¤ì„ìŠ¤í˜ì´ìŠ¤
+	@since 1.0.0
+	*/
 	namespace io
 	{
-		enum class IoEvent { IO_EVENT_DISCONNECTED, IO_EVENT_CONNECTED, MAX };
+		enum class ConnectionEvent { DISCONNECTED, CONNECTED, MAX };
 
 		struct IPAddress
 		{
@@ -63,7 +70,7 @@ namespace rgs
 				port(port) {}
 
 			std::string host;
-			int port;
+			int port = 0;
 		};
 	}
 
@@ -95,6 +102,11 @@ namespace rgs
 		std::chrono::time_point<std::chrono::system_clock, std::chrono::system_clock::duration> detailedStartTime_;
 	};
 
+	/**
+	@namespace convert
+	@brief ë³€í™˜ ê´€ë ¨ í´ë˜ìŠ¤ ë° í•¨ìˆ˜ ë„¤ì„ìŠ¤í˜ì´ìŠ¤
+	@since 1.0.0
+	*/
 	namespace convert
 	{
 		inline std::wstring s2ws(const std::string& str)
@@ -167,8 +179,18 @@ namespace rgs
 		void toLower(std::wstring& str);
 	}
 
+	/**
+	@namespace helper
+	@brief ë¶€ê°€ì ìœ¼ë¡œ ì‚¬ìš©ë˜ëŠ” ìœ í‹¸ë¦¬í‹° ë„¤ì„ìŠ¤í˜ì´ìŠ¤
+	@since 1.0.0
+	*/
 	namespace helper
 	{
+		/**
+		@namespace tuple
+		@brief tuple ë° generic programmingì—ì„œ ì‚¬ìš©ë˜ëŠ” ìœ í‹¸ë¦¬í‹° ë„¤ì„ìŠ¤í˜ì´ìŠ¤
+		@since 1.0.0
+		*/
 		namespace tuple
 		{
 			template<int... Is> struct seq {};

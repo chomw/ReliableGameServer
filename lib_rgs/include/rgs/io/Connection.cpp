@@ -9,39 +9,42 @@
 
 using namespace rgs::io;
 
-Connection::Connection(int port) : port_(port)
-{
-	registerHandler(rgs::io::IoEvent::IO_EVENT_CONNECTED, std::bind(&Connection::connected, this, std::placeholders::_1));
-	registerHandler(rgs::io::IoEvent::IO_EVENT_DISCONNECTED, std::bind(&Connection::disconnected, this, std::placeholders::_1));
-}
-
 void Connection::update()
 {
-	//SINGLE 모드에서 io 처리
-	if (NetworkEngine::instance().getCore() == rgs::Core::SINGLE)
+	Connection::ConnectionEvent element;
+	while (connectionEventQueue_.empty() == false)
 	{
-		Connection::IoEvent element;
-		while (ioEventQueue_.empty() == false)
+		if (connectionEventQueue_.try_pop(element) == true)
 		{
-			if (ioEventQueue_.try_pop(element) == true)
+			//커넥션 이벤트 핸들러를 호출한다. (응용 레벨)
+			handlers_.call(
+				(int)element.connectionEvent, 
+				element.session
+			);
+
+			//커넥션 이벤트를 내부적으로 처리한다. (엔진 레벨)
+			if (element.connectionEvent == rgs::io::ConnectionEvent::CONNECTED)
 			{
-				handlers_.call((int)element.ioEvent, std::move(element.session));
+				connected(element.session);
+
+				//연결 수립 이후 패킷 처리를 시작한다.
+				connectedSessions_[element.session->id()] = element.session;
+				connectedSize_++;
+			}
+			else
+			{
+				element.session->dispatch();
+				
+				connectedSessions_.erase(element.session->id());
+				connectedSize_--;
+				
+				//패킷 처리 종료 이후 종료 처리를 한다.
+				disconnected(element.session);
 			}
 		}
-
-		dispatch();
 	}
-}
 
-std::shared_ptr<rgs::io::Session>
-Connection::getSession()
-{
-	return nullptr;
-}
-
-unsigned int Connection::sessionSize()const
-{
-	return sessionSize_;
+	dispatch();
 }
 
 unsigned int Connection::connectedSize()const
@@ -49,24 +52,14 @@ unsigned int Connection::connectedSize()const
 	return connectedSize_;
 }
 
-unsigned int Connection::waitingSize()const
+void Connection::complete(rgs::io::ConnectionEvent connectionEvent, std::shared_ptr<rgs::io::Session> session)
 {
-	long waitSize = sessionSize_ - connectedSize_;
-	return waitSize < 0 ? 0 : (unsigned int)waitSize;
+	connectionEventQueue_.push(Connection::ConnectionEvent(connectionEvent, session));
 }
 
+void Connection::connected(std::shared_ptr<Session> session){}
 
-void Connection::complete(rgs::io::IoEvent ioEvent, std::shared_ptr<rgs::io::Session> session)
-{
-	if (NetworkEngine::instance().getCore() == rgs::Core::MULTI)
-	{
-		handlers_.call((int)ioEvent, std::move(session));
-	}
-	else
-	{
-		ioEventQueue_.push(Connection::IoEvent(ioEvent, session));
-	}
-}
+void Connection::disconnected(std::shared_ptr<Session> session){}
 
 void Connection::dispatch()
 {
@@ -77,112 +70,100 @@ void Connection::dispatch()
 	}
 }
 
-void Connection::connected(std::shared_ptr<rgs::io::Session> session)
-{
-	if (NetworkEngine::instance().getCore() == rgs::Core::SINGLE)
-	{
-		connectedSessions_[session->id()] = session;
-	}
-
-	connectedSize_++;	
-}
-
-void Connection::disconnected(std::shared_ptr<rgs::io::Session> session)
-{
-	if (NetworkEngine::instance().getCore() == rgs::Core::SINGLE)
-	{
-		connectedSessions_[session->id()]->dispatch();
-		connectedSessions_.erase(session->id());
-	}
-
-	connectedSize_--;
-}
-
-Listener::Listener(int port) : Connection(port) {}
-
-void Listener::complete(rgs::io::IoEvent ioEvent, std::shared_ptr<rgs::io::Session> session)
-{
-	Connection::complete(ioEvent, session);
-
-	if (ioEvent == rgs::io::IoEvent::IO_EVENT_CONNECTED)
-	{
-		if (waitingSize() < capacity_)
-		{
-			createSession();
-		}
-	}
-
-	if (ioEvent == rgs::io::IoEvent::IO_EVENT_DISCONNECTED)
-	{
-		session->listening();
-	}
-}
 
 bool
-Listener::initialize(std::shared_ptr<rgs::protocol::Protocol> protocol, unsigned int capacity, unsigned int maxConnection)
+Listener::initiate(std::shared_ptr<rgs::io::CreateSession> createSession, int port)
 {
-	assert(protocol.get());
+	assert(createSession);
 
-	if (protocol == nullptr)
+	if (createSession == nullptr)
 	{
-		LOG(ERROR) << "Connector::initialize Error : " << rgs::Error::ERROR_NULL_DATA;
+		LOG(ERROR) << "Connector::initiate Error : " << rgs::Error::ERROR_NULL_DATA;
 		return false;
 	}
 
-	protocol_ = protocol;
-	capacity_ = capacity;
-	maxConnection_ = maxConnection;
+	createSession_ = createSession;
+	port_ = port;
 
-	for (unsigned int i = 0; i < capacity_; ++i)
+	if (capacity_ <= 0)
 	{
-		createSession();
+		capacity_ = Listener::CAPACITY;
 	}
+
+	if (maxSize_ <= 0)
+	{
+		maxSize_ = Listener::MAX_SIZE;
+	}
+
+	if (capacity_ > maxSize_)
+	{
+		capacity_ = maxSize_._My_val;
+	}
+
+	keepCapacity();
 
 	return true;
 }
 
-std::shared_ptr<Session>
-Listener::createSession()
+void Listener::setCapacity(unsigned int capacity)
 {
-	if (sessionSize() >= maxConnection_)
-	{
-		return nullptr;
-	}
-
-	std::shared_ptr<Session> session = nullptr;
-
-	session = std::make_shared<Session>(this);
-	
-	session->initialize(protocol_, port_);
-
-	session->listening();
-
-	sessions_.push_back(session);
-	sessionSize_++;
-
-	return session;
+	capacity_ = capacity;
 }
 
-Connector::Connector(const rgs::io::IPAddress& endPointIp) :
-	Connection(),
-	endPointIp_(std::make_shared<rgs::io::IPAddress>(endPointIp)) {}
+void Listener::setMaxSize(unsigned int maxSize)
+{
+	maxSize_ = maxSize;
+}
+
+void Listener::connected(std::shared_ptr<Session> session) 
+{
+	keepCapacity();
+}
+
+void Listener::disconnected(std::shared_ptr<Session> session) 
+{
+	session->listening(port_);
+}
+
+void Listener::keepCapacity()
+{
+	assert(createSession_);
+
+	unsigned int waitingSize = size_ - connectedSize();
+
+	for (int i = waitingSize; i <= capacity_; ++i)
+	{
+		if (size_ >= maxSize_)
+		{
+			return;
+		}
+
+		std::shared_ptr<Session> session = (*createSession_)();
+
+		session->registerHandler(std::bind(&Listener::complete, this, std::placeholders::_1, std::placeholders::_2));
+
+		session->listening(port_);
+
+		sessions_.push_back(session);
+
+		size_++;
+	}
+}
 
 bool
-Connector::initialize(std::shared_ptr<rgs::protocol::Protocol> protocol)
+Connector::initiate(std::shared_ptr<rgs::io::CreateSession> createSession, const rgs::io::IPAddress& endPointIp)
 {
-	assert(protocol.get());
+	assert(createSession);
 
-	if (protocol == nullptr)
+	if (createSession == nullptr)
 	{
-		LOG(ERROR) << "Connector::initialize Error : " << rgs::Error::ERROR_NULL_DATA;
+		LOG(ERROR) << "Connector::initiate Error : " << rgs::Error::ERROR_NULL_DATA;
 		return false;
 	}
 
-	protocol_ = protocol;
-	capacity_ = 0;
-	maxConnection_ = 0;
+	createSession_ = createSession;
 
-	registerHandler(rgs::io::IoEvent::IO_EVENT_DISCONNECTED, std::bind(&Connector::returnSession, this, std::placeholders::_1));
+	endPointIp_ = std::make_shared<rgs::io::IPAddress>(endPointIp);
 
 	return true;
 }
@@ -190,7 +171,23 @@ Connector::initialize(std::shared_ptr<rgs::protocol::Protocol> protocol)
 std::shared_ptr<rgs::io::Session>
 Connector::getSession()
 {
-	std::shared_ptr<Session> session = createSession();
+	std::shared_ptr<Session> session = nullptr;
+
+	///대기 세션 큐에서 세션을 얻는다.
+	if (waitingSessions_.try_pop(session) == true)
+	{
+		session->initialize();
+	}
+
+	///얻지 못하면 새로 생성한다.
+	if(session == nullptr)
+	{
+		assert(createSession_);
+
+		session = (*createSession_)();
+
+		session->registerHandler(std::bind(&Connector::complete, this, std::placeholders::_1, std::placeholders::_2));
+	}
 
 	if (session->bind() == false)
 	{
@@ -213,32 +210,9 @@ Connector::getSession()
 	return session;
 }
 
-unsigned int 
-Connector::waitingSize()const
+void Connector::disconnected(std::shared_ptr<Session> session)
 {
-	return waitingSessions_.unsafe_size();
-}
-
-std::shared_ptr<Session>
-Connector::createSession()
-{
-	std::shared_ptr<Session> session = nullptr;
-	
-	if (waitingSessions_.try_pop(session) == false)
-	{
-		session = std::make_shared<Session>(this);
-
-		session->initialize(protocol_);
-
-		sessions_.push_back(session);
-		sessionSize_++;
-	}
-	else
-	{
-		session->initialize();
-	}
-
-	return session;
+	returnSession(session);
 }
 
 void

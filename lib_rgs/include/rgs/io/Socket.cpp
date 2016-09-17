@@ -28,18 +28,17 @@ Socket::Socket(Session& session) :
 	proactor_(nullptr),
 	listenSocket_(nullptr),
 	session_(session),
-	previousSendTime_(0),
-	delayTime_(0),
+	lastSendTime_(0),
+	delay_(0),
 	lastCheckTime_(0),
-	delay_(Socket::DEFAULT_DELAY),
+	checkTime_(Socket::DEFAULT_DELAY),
 	writeCount_(0),
 	isConnect_(false),
 	isRegisterToIocp_(false),
 	isCanceled_(false),
-	useKeepAlive_(false),
 	useDelay_(true),
-	keepAliveInterval_(30000),
-	keepAliveTimestamp_(0),
+	timeout_(30000),
+	lastIoTime_(0),
 	currentState_(State::DISCONNECTED),
 	operatingState_(State::DISCONNECTED) {}
 
@@ -106,13 +105,13 @@ bool Socket::write(BYTE* data, unsigned int size)
 		if (lastCheckTime_ <= currentTime)
 		{
 			//지연시간을 계산한다
-			delayTime_ = (writeCount_ / IMMEDIATELY_SEND);
+			delay_ = (writeCount_ / IMMEDIATELY_SEND);
 
 			writeCount_ = 0;
-			lastCheckTime_ = currentTime + delay_;
+			lastCheckTime_ = currentTime + checkTime_;
 		}
 
-		if (previousSendTime_ + delayTime_ <= currentTime)
+		if (lastSendTime_ + delay_ <= currentTime)
 		{
 			if (send(sendBuffer_, sendSize_) == false)
 			{
@@ -120,7 +119,7 @@ bool Socket::write(BYTE* data, unsigned int size)
 			}
 
 			sendSize_ = 0;
-			previousSendTime_ = ::timeGetTime();
+			lastSendTime_ = ::timeGetTime();
 		}
 	}
 	else
@@ -196,7 +195,7 @@ bool Socket::receive(unsigned int receiveBytes)
 		return false;
 	}
 
-	setKeepAliveTimestamp(::timeGetTime());
+	setLastIoTime(::timeGetTime());
 
 	receiveSize_ += receiveBytes;
 
@@ -257,7 +256,7 @@ bool Socket::bind()
 	return true;
 }
 
-bool Socket::connect(const std::string& address, USHORT port, BYTE* data, unsigned int size)
+bool Socket::connect(const std::string& address, USHORT port, const BYTE* data, unsigned int size)
 {
 	if (isValidRowSocket() == false)
 	{
@@ -284,7 +283,7 @@ bool Socket::connect(const std::string& address, USHORT port, BYTE* data, unsign
 
 	DWORD sendBytes = 0;
 	
-	BOOL ret = ConnectEx(rowSocket_, (SOCKADDR*)&addrInfo, sizeof(addrInfo), data, size, &sendBytes, static_cast<OVERLAPPED*>(&acts_[ACT_TYPE::ACT_CONNECT]));
+	BOOL ret = ConnectEx(rowSocket_, (SOCKADDR*)&addrInfo, sizeof(addrInfo), (PVOID)data, size, &sendBytes, static_cast<OVERLAPPED*>(&acts_[ACT_TYPE::ACT_CONNECT]));
 
 	if (ret == FALSE)
 	{
@@ -336,7 +335,7 @@ bool Socket::disconnect()
 			rowSocket_ = INVALID_SOCKET;
 		}
 
-		session_.complete(rgs::io::IoEvent::IO_EVENT_DISCONNECTED);
+		session_.complete(rgs::io::ConnectionEvent::DISCONNECTED);
 	}
 	else
 	{
@@ -372,13 +371,13 @@ bool Socket::listening()
 		return false;
 	}
 
+	currentState_ = State::LISTENING;
+	operatingState_ = State::LISTENING;
+
 	if (listenSocket_->listen(this, (char*)receiveBuffer_, 0, &acts_[Socket::ACT_ACCEPT]) == false)
 	{
 		return false;
 	}
-
-	currentState_ = State::LISTENING;
-	operatingState_ = State::LISTENING;
 
 	return true;
 }
@@ -412,19 +411,17 @@ bool Socket::readAddress()
 		return false;
 	}
 
-	session_.ipAddress(rgs::io::IPAddress(
-		::inet_ntoa(address.sin_addr),
-		::ntohs(address.sin_port)
-	));
-
+	ipAddress_.host = ::inet_ntoa(address.sin_addr);
+	ipAddress_.port = ::ntohs(address.sin_port);
+	
 	return true;
 }
 
-void Socket::complete(rgs::io::IoEvent ioEvent)
+void Socket::complete(rgs::io::ConnectionEvent connectionEvent)
 {
-	switch (ioEvent)
+	switch (connectionEvent)
 	{
-	case rgs::io::IoEvent::IO_EVENT_CONNECTED:
+	case rgs::io::ConnectionEvent::CONNECTED:
 	{
 		initialize();
 		
@@ -450,9 +447,9 @@ void Socket::complete(rgs::io::IoEvent ioEvent)
 			setRegisterToIocp(true);
 		}
 
-		setKeepAliveTimestamp(::timeGetTime());
+		setLastIoTime(::timeGetTime());
 		
-		session_.complete(ioEvent);
+		session_.complete(connectionEvent);
 		
 		currentState_ = State::CONNECTED;
 
@@ -464,10 +461,10 @@ void Socket::complete(rgs::io::IoEvent ioEvent)
 
 	}
 	break;
-	case rgs::io::IoEvent::IO_EVENT_DISCONNECTED:
+	case rgs::io::ConnectionEvent::DISCONNECTED:
 	{
 		currentState_ = State::DISCONNECTED;
-		session_.complete(ioEvent);
+		session_.complete(connectionEvent);
 	}
 	break;
 	}
@@ -522,7 +519,7 @@ void Socket::sendDelayed()
 		return;
 	}
 
-	if (previousSendTime_ + Socket::DEFAULT_DELAY <= ::timeGetTime())
+	if (lastSendTime_ + Socket::DEFAULT_DELAY <= ::timeGetTime())
 	{
 		send(sendBuffer_, sendSize_);
 		sendSize_ = 0;
@@ -605,7 +602,7 @@ bool Socket::send(BYTE* data, unsigned int size)
 
 	int ret = ::WSASend(rowSocket_, &wsaSendBuf, 1, NULL, 0, static_cast<OVERLAPPED*>(&(acts_[ACT_TYPE::ACT_SEND])), NULL);
 
-	setKeepAliveTimestamp(::timeGetTime());
+	setLastIoTime(::timeGetTime());
 
 	if (ret != SOCKET_ERROR)
 	{
@@ -630,35 +627,30 @@ bool Socket::send(BYTE* data, unsigned int size)
 	return false;
 }
 
-void Socket::useKeepAlive(bool useKeepAlive)
+void Socket::setTimeout(DWORD timeout)
 {
-	useKeepAlive_ = useKeepAlive;
+	timeout_ = timeout;
 }
 
-bool Socket::isExpired()
+bool Socket::isTimeout()const
 {
 	if (isConnected() == false)
 	{
 		return false;
 	}
 
-	if (useKeepAlive_ == false)
+	if (timeout_ <= 0)
 	{
 		return false;
 	}
 
-	DWORD elapsedTime = ::timeGetTime() - keepAliveTimestamp_;
-	return keepAliveInterval_ <= elapsedTime;
+	DWORD elapsedTime = ::timeGetTime() - lastIoTime_;
+	return timeout_ <= elapsedTime;
 }
 
-void Socket::setKeepAliveInterval(DWORD interval)
+void Socket::setLastIoTime(DWORD time)
 {
-	keepAliveInterval_ = interval;
-}
-
-void Socket::setKeepAliveTimestamp(DWORD time)
-{
-	keepAliveTimestamp_ = time;
+	lastIoTime_ = time;
 }
 
 void Socket::setDelay(bool useDelay)
@@ -668,8 +660,13 @@ void Socket::setDelay(bool useDelay)
 
 void Socket::setDelay(bool useDelay, DWORD delay)
 {
-	delay_ = delay;
+	checkTime_ = delay;
 	setDelay(useDelay);
+}
+
+rgs::io::IPAddress Socket::ipAddress()const
+{
+	return ipAddress_;
 }
 
 void ListenSocket::initialize(rgs::io::proactor::Proactor* proactor, unsigned int port)
@@ -737,7 +734,7 @@ bool ListenSocket::listen(Socket* socket, char* buffer, unsigned int bufferSize,
 }
 
 
-class SocketMonitor::Implementation
+class SocketThread::Implementation
 {
 public:
 	struct AddedSocket
@@ -792,8 +789,8 @@ public:
 				//지연된 데이터를 전송한다
 				socket->sendDelayed();
 
-				//keep alive
-				if (socket->isExpired() == true)
+				//Time out 확인
+				if (socket->isTimeout() == true)
 				{
 					socket->disconnect();
 				}
@@ -807,11 +804,11 @@ public:
 	std::map<int, std::shared_ptr<Socket>> sockets_;
 };
 
-std::unique_ptr<SocketMonitor> SocketMonitor::instance_ = nullptr;
+std::unique_ptr<SocketThread> SocketThread::instance_ = nullptr;
 
-SocketMonitor::SocketMonitor()
+SocketThread::SocketThread()
 {
-	impl = std::make_unique<SocketMonitor::Implementation>();
+	impl = std::make_unique<SocketThread::Implementation>();
 
 	impl->thread_ = std::make_shared<rgs::thread::Thread<>>();
 	
@@ -820,12 +817,12 @@ SocketMonitor::SocketMonitor()
 	impl->thread_->start();
 }
 
-SocketMonitor::~SocketMonitor()
+SocketThread::~SocketThread()
 {
 	release();
 }
 
-void SocketMonitor::release()
+void SocketThread::release()
 {
 	if (impl->thread_ != nullptr)
 	{
@@ -836,21 +833,21 @@ void SocketMonitor::release()
 	impl->sockets_.clear();
 }
 
-void SocketMonitor::add(int key, std::shared_ptr<Socket> socket)
+void SocketThread::add(int key, std::shared_ptr<Socket> socket)
 {
 	impl->queue_.push(Implementation::AddedSocket(key, socket));
 }
 
-void SocketMonitor::remove(int key)
+void SocketThread::remove(int key)
 {
 	impl->queue_.push(Implementation::AddedSocket(key, nullptr));
 }
 
-SocketMonitor& SocketMonitor::instance()
+SocketThread& SocketThread::instance()
 {
 	if (instance_ == nullptr)
 	{
-		instance_ = std::make_unique<SocketMonitor>();
+		instance_ = std::make_unique<SocketThread>();
 	}
 
 	return *instance_.get();

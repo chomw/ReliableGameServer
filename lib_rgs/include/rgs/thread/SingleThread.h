@@ -1,10 +1,15 @@
-#pragma once
+﻿#pragma once
 
 #include <tuple>
 #include "../callback/Callback.h"
 
 namespace rgs
 {
+	/**
+	@namespace thread
+	@brief multi-threading 관련 네임스페이스
+	@since 1.0.0
+	*/
 	namespace thread
 	{
 		template<typename... TArgs>

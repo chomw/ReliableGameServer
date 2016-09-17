@@ -65,11 +65,6 @@ void NetworkEngine::registerSocket(std::shared_ptr<rgs::io::Socket> socket)
 		);
 }
 
-void NetworkEngine::setCore(rgs::Core core)
-{
-	core_ = core;
-}
-
 std::shared_ptr<ListenSocket> NetworkEngine::getListenSocket(int port)
 {
 	std::shared_ptr<ListenSocket> listenSocket = listenSockets_[port];
@@ -85,9 +80,4 @@ std::shared_ptr<ListenSocket> NetworkEngine::getListenSocket(int port)
 	}
 
 	return listenSocket;
-}
-
-rgs::Core NetworkEngine::getCore()const
-{
-	return core_;
 }

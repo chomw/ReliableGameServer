@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #pragma comment(lib, "libprotobuf.lib")
 
@@ -18,6 +18,11 @@ namespace rgs
 {
 	namespace protocol
 	{
+		/**
+		@namespace protobuf
+		@brief Google Protocol Buffer 기반 프로토콜 네임스페이스
+		@since 1.0.0
+		*/
 		namespace protobuf
 		{
 			template<class T>
@@ -37,24 +42,6 @@ namespace rgs
 					(*handler_)(session, &packet_);
 
 					return true;
-				}
-
-				virtual bool dispatch(std::shared_ptr<rgs::io::Session> session, const rgs::protocol::RowData& rowData)const override
-				{
-					assert(handler_);
-
-					T packet;
-					Deserialization deserialization(packet);
-
-					if (deserialization(rowData) == true)
-					{
-						(*handler_)(session, &packet);
-						return true;
-					}
-					else
-					{
-						return false;
-					}
 				}
 
 				virtual bool deserialize(const rgs::protocol::RowData& rowData) override
@@ -136,7 +123,6 @@ namespace rgs
 			{
 			public:
 				virtual int readPacket(const rgs::protocol::RowData& rowData, rgs::protocol::Packet** packet, unsigned int& readBytes)const;
-				virtual int dispatchPacket(const rgs::protocol::RowData& rowData, std::shared_ptr<rgs::io::Session> session, unsigned int& readBytes)const;
 
 				template<typename T, class F>
 				void registerPacket(unsigned int packetId, F&&);

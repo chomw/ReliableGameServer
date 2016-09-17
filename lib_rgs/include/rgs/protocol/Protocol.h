@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <memory>
 
 namespace rgs
@@ -9,6 +9,11 @@ namespace rgs
 		class Session;
 	}
 
+	/**
+	@namespace protocol
+	@brief 패킷의 Serialization, Deserialization과 패킷 핸들링 프로토콜 네임스페이스
+	@since 1.0.0
+	*/
 	namespace protocol
 	{
 		struct RowData
@@ -64,7 +69,6 @@ namespace rgs
 			virtual ~Packet() = default;
 
 			virtual bool dispatch(std::shared_ptr<rgs::io::Session> ) = 0;
-			virtual bool dispatch(std::shared_ptr<rgs::io::Session>, const RowData& rowData)const = 0;
 
 			virtual bool deserialize(const RowData& rowData) = 0;
 		};
@@ -95,7 +99,6 @@ namespace rgs
 		public:
 			virtual ~Protocol() = default;
 			virtual int readPacket(const RowData& rowData, Packet** packet, unsigned int& readBytes)const = 0;
-			virtual int dispatchPacket(const RowData& rowData, std::shared_ptr<rgs::io::Session> session, unsigned int& readBytes)const = 0;
 		};
 	}
 }

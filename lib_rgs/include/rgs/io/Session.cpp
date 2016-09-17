@@ -22,17 +22,8 @@ unsigned int generateId()
 }
 
 Session::Session() : 
-socket_(std::make_shared<Socket>(*this)), 
-connection_(nullptr) {}
-
-Session::Session(rgs::io::Connection* connection) :
-socket_(std::make_shared<Socket>(*this)),
-connection_(connection) {}
-
-Session::~Session()
-{
-	SocketMonitor::instance().remove(id_);
-}
+	id_(0),
+	socket_(std::make_shared<Socket>(*this)) {}
 
 bool
 Session::initialize()
@@ -46,10 +37,8 @@ Session::initialize()
 }
 
 bool 
-Session::initialize(std::shared_ptr<rgs::protocol::Protocol> protocol, int port)
+Session::initialize(std::shared_ptr<rgs::protocol::Protocol> protocol)
 {	
-	id_ = generateId();
-
 	if (socket_->createRowSocket() == false)
 	{
 		return false;
@@ -59,12 +48,6 @@ Session::initialize(std::shared_ptr<rgs::protocol::Protocol> protocol, int port)
 
 	//proactor ÃÊ±âÈ­
 	NetworkEngine::instance().registerSocket(socket_);
-
-	//listen socket
-	if (port > 0)
-	{
-		socket_->setListenSocket(NetworkEngine::instance().getListenSocket(port));
-	}
 
 	return true;
 }
@@ -95,14 +78,7 @@ Session::read(const rgs::protocol::RowData& rowData, unsigned int& readBytes)
 			return rgs::Error::ERROR_DISCONNECTED_SESSION;
 		}
 
-		if (NetworkEngine::instance().getCore() == rgs::Core::MULTI)
-		{
-			error = protocol_->dispatchPacket(packetRowData, shared_from_this(), readBytes);
-		}
-		else
-		{
-			error = protocol_->readPacket(packetRowData, &packet, readBytes);
-		}
+		error = protocol_->readPacket(packetRowData, &packet, readBytes);
 
 		if (error)
 		{
@@ -115,22 +91,17 @@ Session::read(const rgs::protocol::RowData& rowData, unsigned int& readBytes)
 			break;
 		}
 
+		if (packet == nullptr)
+		{
+			error = rgs::Error::ERROR_NULL_DATA;
+			LOG(ERROR) << "Session-" << id_ << " Session::read() Error : " << error;
+			return error;
+		}
+
+		packets_.push(packet);
+
 		packetRowData.data += readBytes;
 		packetRowData.size -= readBytes;
-
-		if (NetworkEngine::instance().getCore() == rgs::Core::SINGLE)
-		{
-			if(packet == nullptr)
-			{
-				error = rgs::Error::ERROR_NULL_DATA;
-				LOG(ERROR) << "Session-" << id_ << " Session::read() Error : " << error;
-				return error;
-			}
-			else
-			{
-				packets_.push(packet);
-			}
-		}
 	}
 	
 	readBytes = rowData.size - packetRowData.size;
@@ -145,20 +116,9 @@ Session::bind()
 }
 
 bool 
-Session::connect(const std::string& address, int port, const rgs::protocol::RowData* rowData)
+Session::connect(const std::string& address, int port, const BYTE* data, unsigned int size)
 {
-	bool result = false;
-
-	if (rowData != nullptr)
-	{
-		result = socket_->connect(address, port, rowData->data, rowData->size);
-	}
-	else
-	{
-		result = socket_->connect(address, port);
-	}
-	
-	return result;
+	return socket_->connect(address, port, data, size);
 }
 
 bool
@@ -168,8 +128,12 @@ Session::disconnect()
 }
 
 bool 
-Session::listening()
+Session::listening(int port)
 {
+	//listen socket
+	auto listenSocket = NetworkEngine::instance().getListenSocket(port);
+	socket_->setListenSocket(listenSocket);
+
 	return socket_->listening();
 }
 
@@ -203,33 +167,31 @@ Session::dispatch()
 }
 
 void
-Session::complete(rgs::io::IoEvent ioEvent)
+Session::complete(rgs::io::ConnectionEvent connectionEvent)
 {
-	if (ioEvent == rgs::io::IoEvent::IO_EVENT_CONNECTED)
+	if (connectionEvent == rgs::io::ConnectionEvent::CONNECTED)
 	{
+		id_ = generateId();
 		socket_->setConnected(true);
 		LOG(INFO) << "Session-" << id_ << " is Connected (host : " <<
-			ipAddress_.host << " / port : " <<
-			ipAddress_.port << ")";
+			ipAddress().host << " / port : " <<
+			ipAddress().port << ")";
 
-		SocketMonitor::instance().add(id_, socket_);
+		SocketThread::instance().add(id_, socket_);
 	}
 
-	if (ioEvent == rgs::io::IoEvent::IO_EVENT_DISCONNECTED)
+	if (connectionEvent == rgs::io::ConnectionEvent::DISCONNECTED)
 	{
 		LOG(INFO) << "Session-" << id_ << " is Disconnected (host : " <<
-			ipAddress_.host << " / port : " <<
-			ipAddress_.port << ")";
+			ipAddress().host << " / port : " <<
+			ipAddress().port << ")";
 
 		socket_->setConnected(false);
 
-		SocketMonitor::instance().remove(id_);
+		SocketThread::instance().remove(id_);
 	}
 
-	if (connection_)
-	{
-		connection_->complete(ioEvent, shared_from_this());
-	}
+	handler_(connectionEvent, shared_from_this());
 }
 
 bool 
@@ -238,25 +200,14 @@ Session::isConnected()const
 	return socket_->isConnected();
 }
 
-
-void Session::useKeepAlive(bool useKeepAlive)
+void Session::setTimeout(DWORD timeout)
 {
-	socket_->useKeepAlive(useKeepAlive);
-}
-
-void Session::setKeepAliveInterval(DWORD interval)
-{
-	socket_->setKeepAliveInterval(interval);
-}
-
-void Session::ipAddress(const rgs::io::IPAddress& ipAddress)
-{
-	ipAddress_ = ipAddress;
+	socket_->setTimeout(timeout);
 }
 
 rgs::io::IPAddress Session::ipAddress()const
 {
-	return ipAddress_;
+	return socket_->ipAddress();
 }
 
 void Session::setDelay(bool useDelay)
@@ -267,4 +218,16 @@ void Session::setDelay(bool useDelay)
 void Session::setDelay(bool useDelay, DWORD delay)
 {
 	socket_->setDelay(useDelay, delay);
+}
+
+CreateSession::CreateSession(std::shared_ptr<rgs::protocol::Protocol> protocol) : 
+	protocol_(protocol) {}
+
+std::shared_ptr<Session> CreateSession::operator()()
+{
+	std::shared_ptr<Session> session = std::make_shared<Session>();
+
+	session->initialize(protocol_);
+
+	return session;
 }

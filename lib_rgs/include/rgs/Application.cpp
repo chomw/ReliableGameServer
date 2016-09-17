@@ -11,22 +11,17 @@ using namespace rgs;
 
 void Application::mainLoop()
 {
-	if (rgs::io::NetworkEngine::instance().getCore() == rgs::Core::SINGLE)
-	{
-		updateConnection();
-	}
-
+	updateConnection();
 	update();
 }
 
-void Application::create(rgs::Core core, const std::string& appName, const std::string& logPath, DWORD updateInterval)
+void Application::create(const std::string& appName, const std::string& logPath, DWORD updateInterval)
 {
 	upDown_ = std::make_shared<rgs::UpDown>(logPath + appName + "-");
 	appName_ = appName;
 	
 	LOG(INFO) << "LOADING " << appName_;
 
-	rgs::io::NetworkEngine::instance().setCore(core);
 	rgs::io::NetworkEngine::instance().start();
 
 	mainLoop_ = std::make_shared<rgs::thread::Thread<>>();
@@ -40,7 +35,7 @@ void Application::destroy()
 	
 	rgs::io::NetworkEngine::instance().stop();
 	
-	rgs::io::SocketMonitor::instance().release();
+	rgs::io::SocketThread::instance().release();
 
 	connections_.clear();
 

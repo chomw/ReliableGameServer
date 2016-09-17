@@ -11,7 +11,7 @@ void Acceptor::procEvent(Act* act, DWORD bytes)
 	Socket* socket = act->socket_;
 	assert(socket);
 	
-	socket->complete(rgs::io::IoEvent::IO_EVENT_CONNECTED);
+	socket->complete(rgs::io::ConnectionEvent::CONNECTED);
 	socket->startReceive();
 }
 

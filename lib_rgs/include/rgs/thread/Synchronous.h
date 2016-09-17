@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <Windows.h>
 #include <process.h>
 #include <assert.h>
@@ -8,6 +8,11 @@ namespace rgs
 {
 	namespace thread
 	{
+		/**
+		@namespace sync
+		@brief multi-threading ë™ê¸°í™” ê´€ë ¨ ë„¤ì„ìŠ¤í˜ì´ìŠ¤
+		@since 1.0.0
+		*/
 		namespace sync
 		{
 			class Lock
@@ -19,7 +24,7 @@ namespace rgs
 				virtual void leave() = 0;
 			};
 
-			//±âº»ÀûÀÎ µ¿±âÈ­ Å¬·¡½º
+			//ê¸°ë³¸ì ì¸ ë™ê¸°í™” í´ë˜ìŠ¤
 			class SimpleLock : public Lock
 			{
 			public:
@@ -51,7 +56,7 @@ namespace rgs
 				Lock* lock;
 			};
 
-			//½ÇÇà ¼ø¼­¸¦ µ¿±âÈ­ÇÏ´Â Å¬·¡½º
+			//ì‹¤í–‰ ìˆœì„œë¥¼ ë™ê¸°í™”í•˜ëŠ” í´ë˜ìŠ¤
 			class ExecutionOrderLock
 			{
 			public:
@@ -68,7 +73,7 @@ namespace rgs
 				}
 				void wait()
 				{
-					//hEvent°¡ Signaled»óÅÂ¸é Áï½Ã ¸®ÅÏµÇ°í, Non-signaled»óÅÂ¸é ´ë±âÇÑ´Ù.
+					//hEventê°€ Signaledìƒíƒœë©´ ì¦‰ì‹œ ë¦¬í„´ë˜ê³ , Non-signaledìƒíƒœë©´ ëŒ€ê¸°í•œë‹¤.
 					::WaitForSingleObject(hEvent, INFINITE);
 				}
 
@@ -76,7 +81,7 @@ namespace rgs
 				{
 					if (lockCount_ == 0)
 					{
-						//hEvent¸¦ Non-signaled»óÅÂ·Î ¸¸µç´Ù.
+						//hEventë¥¼ Non-signaledìƒíƒœë¡œ ë§Œë“ ë‹¤.
 						::ResetEvent(hEvent);
 					}
 					lockCount_++;
@@ -87,7 +92,7 @@ namespace rgs
 					lockCount_--;
 					if (lockCount_ == 0)
 					{
-						//hEvent¸¦ Signaled»óÅÂ·Î ¸¸µç´Ù.
+						//hEventë¥¼ Signaledìƒíƒœë¡œ ë§Œë“ ë‹¤.
 						::SetEvent(hEvent);
 					}
 				}
@@ -97,7 +102,7 @@ namespace rgs
 				HANDLE hEvent = 0;
 			};
 
-			//thread-safeÇÏÁö ¾Ê¾Æµµ µÇ´Â ¿µ¿ªÀÇ µ¿±âÈ­
+			//thread-safeí•˜ì§€ ì•Šì•„ë„ ë˜ëŠ” ì˜ì—­ì˜ ë™ê¸°í™”
 			class ExecutionAroundScope
 			{
 			public:
@@ -117,7 +122,7 @@ namespace rgs
 				ExecutionOrderLock& aroundLock_;
 			};
 
-			//thread-safeÇØ¾ß¸¸ ÇÏ´Â ¿µ¿ªÀÇ µ¿±âÈ­
+			//thread-safeí•´ì•¼ë§Œ í•˜ëŠ” ì˜ì—­ì˜ ë™ê¸°í™”
 			class ExecutionPointScope
 			{
 			public:

@@ -1,10 +1,15 @@
-#pragma once
+﻿#pragma once
 #include <windows.h>
 
 namespace rgs
 {
 	namespace io
 	{
+		/**
+		@namespace proactor
+		@brief Proactor 패턴 관련 네임스페이스
+		@since 1.0.0
+		*/
 		namespace proactor
 		{
 			class Act;

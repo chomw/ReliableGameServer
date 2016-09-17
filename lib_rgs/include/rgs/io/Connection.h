@@ -8,123 +8,108 @@
 
 namespace rgs
 {
-	namespace protocol
-	{
-		class Protocol;
-	}
-
 	namespace io
 	{
-		enum class IoEvent;
+		enum class ConnectionEvent;
 
 		struct IPAddress;
 		class Socket;
 		class Session;
-		
+		class CreateSession;
+
 		class Connection
 		{
 		protected:
-			struct IoEvent
+			struct ConnectionEvent
 			{
-				IoEvent() = default;
-				IoEvent(rgs::io::IoEvent ioEvent, std::shared_ptr<rgs::io::Session> session):
-					ioEvent(ioEvent),
+				ConnectionEvent() = default;
+				ConnectionEvent(rgs::io::ConnectionEvent connectionEvent, std::shared_ptr<rgs::io::Session> session):
+					connectionEvent(connectionEvent),
 					session(session) {}
 
-				rgs::io::IoEvent ioEvent;
+				rgs::io::ConnectionEvent connectionEvent;
 				std::shared_ptr<rgs::io::Session> session;
 			};
 
 		public:
-			explicit Connection(int port = 0);
-
 			virtual ~Connection() = default;
 			
-			virtual void update();
-
-			virtual std::shared_ptr<rgs::io::Session> getSession();
-
 		public:
-			unsigned int sessionSize()const;
+			void update();
 
 			unsigned int connectedSize()const;
 
-			virtual unsigned int waitingSize()const;
-
-		public:
 			//handler등록
 			template<class EventHandler>
-			void registerHandler(rgs::io::IoEvent ioEvent, EventHandler&& handler);
+			void registerHandler(rgs::io::ConnectionEvent connectionEvent, EventHandler&& handler);		
 
-			//event 발생을 알림
-			virtual void complete(rgs::io::IoEvent ioEvent, std::shared_ptr<rgs::io::Session> session);
+		protected:
+			void complete(rgs::io::ConnectionEvent connectionEvent, std::shared_ptr<rgs::io::Session> session);
+
+			virtual void connected(std::shared_ptr<rgs::io::Session> session);
+			virtual void disconnected(std::shared_ptr<rgs::io::Session> session);
 
 		private:
 			void dispatch();
 
-			void connected(std::shared_ptr<rgs::io::Session>);
-
-			void disconnected(std::shared_ptr<rgs::io::Session>);
-
-		protected:
-			virtual std::shared_ptr<Session> createSession() = 0;		
-
-		protected:
-			const int port_ = 0;
-
-			std::atomic<unsigned int> sessionSize_ = 0;
-			std::atomic<unsigned int> connectedSize_ = 0;
-			std::atomic<unsigned int> capacity_ = 0;
-			std::atomic<unsigned int> maxConnection_ = 0;
-
-			std::shared_ptr<rgs::protocol::Protocol> protocol_;
-
-			std::map<int, std::shared_ptr<Session>> connectedSessions_;
-			concurrency::concurrent_vector<std::shared_ptr<rgs::io::Session>> sessions_;
-
 		private:
+			std::atomic<unsigned int> connectedSize_ = 0;
+			std::map<int, std::shared_ptr<Session>> connectedSessions_;
+
 			rgs::cb::Callbacks<std::shared_ptr<rgs::io::Session>> handlers_;
-			concurrency::concurrent_queue<Connection::IoEvent> ioEventQueue_;
+			concurrency::concurrent_queue<Connection::ConnectionEvent> connectionEventQueue_;
 		};
 
 		template<class EventHandler>
-		void Connection::registerHandler(rgs::io::IoEvent ioEvent, EventHandler&& handler)
+		void Connection::registerHandler(rgs::io::ConnectionEvent connectionEvent, EventHandler&& handler)
 		{
-			handlers_.add((int)ioEvent, std::forward<EventHandler>(handler));
+			handlers_.add((int)connectionEvent, std::forward<EventHandler>(handler));
 		}
 
 		class Listener : public Connection
 		{
 		public:
-			explicit Listener(int port);
+			enum { MAX_SIZE = 13000, CAPACITY = 1000};
 
-			virtual void complete(rgs::io::IoEvent ioEvent, std::shared_ptr<rgs::io::Session> session);
-			
-			bool initialize(std::shared_ptr<rgs::protocol::Protocol> protocol, unsigned int capacity, unsigned int maxConnection);
+		public:
+			bool initiate(std::shared_ptr<rgs::io::CreateSession> createSession, int port);
+
+			void setCapacity(unsigned int capacity);
+			void setMaxSize(unsigned int maxSize);
 
 		private:
-			virtual std::shared_ptr<Session> createSession();
+			virtual void connected(std::shared_ptr<rgs::io::Session> session);
+			virtual void disconnected(std::shared_ptr<rgs::io::Session> session);
+
+			void keepCapacity();
+
+		private:
+			int port_ = 0;
+
+			unsigned int size_ = 0;
+			std::atomic<unsigned int> capacity_ = 0;
+			std::atomic<unsigned int> maxSize_ = 0;
+			
+			std::shared_ptr<rgs::io::CreateSession> createSession_;
+			concurrency::concurrent_vector<std::shared_ptr<rgs::io::Session>> sessions_;
 		};
 		
 		class Connector : public Connection
 		{
 		public:
-			explicit Connector(const rgs::io::IPAddress& endPointIp);
+			bool initiate(std::shared_ptr<rgs::io::CreateSession> createSession, const rgs::io::IPAddress& endPointIp);
 
-		public:
-			virtual bool initialize(std::shared_ptr<rgs::protocol::Protocol> protocol);
-
-			virtual std::shared_ptr<rgs::io::Session> getSession();
-
-			virtual unsigned int waitingSize()const;
+			std::shared_ptr<rgs::io::Session> getSession();
 
 		private:
-			virtual std::shared_ptr<Session> createSession();
-			
+			virtual void disconnected(std::shared_ptr<rgs::io::Session> session);
+
 			void returnSession(std::shared_ptr<rgs::io::Session> session);
 
 		private:
+			std::shared_ptr<rgs::io::CreateSession> createSession_;
 			std::shared_ptr<rgs::io::IPAddress> endPointIp_;
+
 			concurrency::concurrent_queue<std::shared_ptr<rgs::io::Session>> waitingSessions_;
 		};
 	}

@@ -38,11 +38,7 @@ namespace rgs
 
 		public:
 			void registerSocket(std::shared_ptr<rgs::io::Socket> socket);
-			void setCore(rgs::Core core);
-
 			std::shared_ptr<ListenSocket> getListenSocket(int port);
-			rgs::Core getCore()const;
-
 
 		private:
 			static std::unique_ptr<NetworkEngine> instance_;
@@ -56,8 +52,6 @@ namespace rgs
 			std::unique_ptr<rgs::io::proactor::Sender>			sender_;
 			std::unique_ptr<rgs::io::proactor::Disconnector>	disconnector_;
 			std::unique_ptr<rgs::io::proactor::Connector>		connector_;
-
-			std::atomic<rgs::Core> core_;
 		};
 	}
 }

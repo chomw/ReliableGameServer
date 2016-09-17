@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Protocol.h"
 #include "json.hpp"
 
@@ -9,6 +9,11 @@ namespace rgs
 {
 	namespace protocol
 	{
+		/**
+		@namespace json
+		@brief json 기반 프로토콜 네임스페이스
+		@since 1.0.0
+		*/
 		namespace json
 		{
 			enum
@@ -25,8 +30,6 @@ namespace rgs
 
 			public:
 				virtual bool dispatch(std::shared_ptr<rgs::io::Session> session) override;
-
-				virtual bool dispatch(std::shared_ptr<rgs::io::Session> session, const rgs::protocol::RowData& rowData)const override;
 
 				virtual bool deserialize(const rgs::protocol::RowData& rowData) override;
 				
@@ -58,7 +61,6 @@ namespace rgs
 			{
 			public:
 				virtual int readPacket(const rgs::protocol::RowData& rowData, rgs::protocol::Packet** packet, unsigned int& readBytes)const;
-				virtual int dispatchPacket(const RowData& rowData, std::shared_ptr<rgs::io::Session> session, unsigned int& readBytes)const;
 
 			public:
 				template<class F>

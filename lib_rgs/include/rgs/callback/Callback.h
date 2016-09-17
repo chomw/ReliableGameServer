@@ -1,10 +1,15 @@
-#pragma once
+ï»¿#pragma once
 
 #include <utility>
 #include <functional>
 
 namespace rgs
 {
+	/**
+	@namespace cb
+	@brief callback ê´€ë ¨ ë„¤ì„ìŠ¤í˜ì´ìŠ¤
+	@since 1.0.0
+	*/
 	namespace cb
 	{
 		template <typename... Ts>
@@ -24,12 +29,11 @@ namespace rgs
 			Callback(F&&, const std::tuple<Ts...>&);
 
 		public:
-			void operator()()const; //¹Ì¸® ¸Å°³º¯¼ö(Ts...)¸¦ ³Ñ°åÀ» ¶§ È£ÃâÇÑ´Ù.
+			void operator()()const; //ë¯¸ë¦¬ ë§¤ê°œë³€ìˆ˜(Ts...)ë¥¼ ë„˜ê²¼ì„ ë•Œ í˜¸ì¶œí•œë‹¤.
 			
-			//¸ğÈ£ÇÑ È£ÃâÀ» ÇÇÇÏ±â À§ÇØ std::enable_if »ç¿ë
+			//ëª¨í˜¸í•œ í˜¸ì¶œì„ í”¼í•˜ê¸° ìœ„í•´ std::enable_if ì‚¬ìš©
 			template<typename... Args, typename = typename std::enable_if<sizeof...(Args) != 0>::type>
-			void operator()(Args&&...)const; //³ªÁß¿¡ ¸Å°³º¯¼ö¸¦ ³Ñ±æ ¶§ È£ÃâÇÑ´Ù.
-			void operator()(std::tuple<Ts...>&)const;
+			void operator()(Args&&...)const; //ë‚˜ì¤‘ì— ë§¤ê°œë³€ìˆ˜ë¥¼ ë„˜ê¸¸ ë•Œ í˜¸ì¶œí•œë‹¤.
 
 			void operator=(const Callback<Ts...>&);
 
@@ -40,7 +44,7 @@ namespace rgs
 			void setCallback(F&&, Args&&...);
 
 		private:
-			//std::tuple<Ts...>¸¦ std::function<void(Ts...)>ÀÇ ¸Å°³º¯¼ö·Î º¯È¯ÇÑ´Ù.
+			//std::tuple<Ts...>ë¥¼ std::function<void(Ts...)>ì˜ ë§¤ê°œë³€ìˆ˜ë¡œ ë³€í™˜í•œë‹¤.
 			template <typename... Args, int... Is>
 			void toVariadic(const std::tuple<Args...>&, helper::tuple::seq<Is...>)const;
 
@@ -48,7 +52,7 @@ namespace rgs
 			void toVariadic(const std::tuple<Args...>&)const;
 
 		private:
-			bool isInitialized_; //args°¡ ÃÊ±âÈ­µÇ¾ú´ÂÁö ¿©ºÎ.
+			bool isInitialized_; //argsê°€ ì´ˆê¸°í™”ë˜ì—ˆëŠ”ì§€ ì—¬ë¶€.
 			std::function<void(Ts...)> func_;
 			std::tuple<Ts...> args_;
 		};
@@ -105,13 +109,6 @@ namespace rgs
 			func_(std::forward<Args>(args)...);
 		}
 
-		//operator()(std::tuple<Ts...>&)
-		template<typename... Ts>
-		void Callback<Ts...>::operator()(std::tuple<Ts...>& args)const
-		{
-			toVariadic(args);
-		}
-
 		template <typename... Ts>
 		void Callback<Ts...>::operator=(const Callback<Ts...>& other)
 		{
@@ -151,7 +148,7 @@ namespace rgs
 		template<typename... Args>
 		inline void Callback<Ts...>::toVariadic(const std::tuple<Args...>& tup)const
 		{
-			//sizeof...()´Â variadicÀÌ °¡Áø template parameter °³¼ö¸¦ ¾Ë·ÁÁØ´Ù.
+			//sizeof...()ëŠ” variadicì´ ê°€ì§„ template parameter ê°œìˆ˜ë¥¼ ì•Œë ¤ì¤€ë‹¤.
 			toVariadic(tup, helper::tuple::gen_seq < sizeof...(Args) > {});
 		}
 	}

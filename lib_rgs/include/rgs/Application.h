@@ -19,7 +19,6 @@ namespace rgs
 	}
 
 	class UpDown;
-	enum class Core;
 
 	class Application
 	{
@@ -30,7 +29,7 @@ namespace rgs
 		void mainLoop();
 
 	public:
-		virtual void create(rgs::Core core, const std::string& appName, const std::string& logPath, DWORD updateInterval);
+		virtual void create(const std::string& appName, const std::string& logPath, DWORD updateInterval);
 		virtual void destroy();
 
 		void start();

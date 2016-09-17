@@ -11,7 +11,7 @@ void Disconnector::procEvent(Act* act, DWORD bytes)
 	rgs::io::Socket* socket = act->socket_;
 	assert(socket);
 	
-	socket->complete(rgs::io::IoEvent::IO_EVENT_DISCONNECTED);
+	socket->complete(rgs::io::ConnectionEvent::DISCONNECTED);
 }
 
 void Disconnector::procError(Act* act, DWORD error)
@@ -22,5 +22,5 @@ void Disconnector::procError(Act* act, DWORD error)
 	assert(socket);
 
 	socket->createRowSocket();
-	socket->complete(rgs::io::IoEvent::IO_EVENT_DISCONNECTED);
+	socket->complete(rgs::io::ConnectionEvent::DISCONNECTED);
 }

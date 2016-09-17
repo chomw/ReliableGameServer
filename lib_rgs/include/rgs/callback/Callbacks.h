@@ -91,12 +91,10 @@ namespace rgs
 			//key에 해당하는 callback을 구한다.
 			auto iterators = callbacks_.equal_range(key);
 
-			std::tuple<Args...> tuple(std::forward<Args>(args)...);
-
 			//구한 callback을 모두 호출한다.
 			for (auto iterator = iterators.first; iterator != iterators.second; ++iterator)
 			{
-				(*iterator->second)(tuple);
+				(*iterator->second)(std::forward<Args>(args)...);
 			}
 		}
 
