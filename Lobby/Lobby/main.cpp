@@ -4,7 +4,7 @@
 
 int main(int argc, char* argv[])
 {
-	App::instance().create(rgs::Core::SINGLE, "Lobby", "./", rgs::Delay::SECOND_MILLI * 1);
+	App::instance().create("Lobby", "./", rgs::Delay::SECOND_MILLI * 1);
 	App::instance().start();
 
 	while (true)

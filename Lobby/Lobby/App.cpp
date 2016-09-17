@@ -18,13 +18,19 @@ App& App::instance()
 	return *instance_.get();
 }
 
-void App::create(rgs::Core core, const std::string& appName, const std::string& logPath, DWORD updateInterval)
+void App::create(const std::string& appName, const std::string& logPath, DWORD updateInterval)
 {
-	rgs::Application::create(core, appName, logPath, updateInterval);
+	rgs::Application::create(appName, logPath, updateInterval);
 
-	std::shared_ptr<rgs::io::Listener> connection = std::make_shared<rgs::io::Listener>(8000);
-	connection->initialize(LobbyHandler::createProtocol(), 5000, 15000);
-	addConnection("frontend", connection);
+	auto protocol = LobbyHandler::createProtocol();
+
+	auto createSession = std::make_shared<rgs::io::CreateSession>(protocol);
+
+	std::shared_ptr<rgs::io::Listener> frontend = std::make_shared<rgs::io::Listener>();
+	
+	frontend->initiate(createSession, 8000);
+	
+	addConnection("frontend", frontend);
 }
 
 void App::update()
