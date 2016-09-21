@@ -32,8 +32,6 @@ connector_(nullptr)
 	connector_ = std::make_unique<Connector>();
 }
 
-NetworkEngine::~NetworkEngine(){}
-
 NetworkEngine& NetworkEngine::instance()
 {
 	if (instance_ == nullptr)
