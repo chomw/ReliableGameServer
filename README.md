@@ -1,6 +1,6 @@
 # Reliable Game Server
 
-Windows기반 C++ 게임 서버 라이브러리입니다.
+Windows 기반 C++ 11 게임 서버 라이브러리입니다.
 
 ## Features
 
