@@ -294,7 +294,7 @@ namespace rgs
 				template<typename T, class F>
 				void registerPacket(unsigned int packetId, F&& handler);
 			
-			protected:
+			private:
 				unsigned int createPacketSize_ = 0;
 				std::vector<std::shared_ptr<rgs::protocol::Packet>> packets_;
 				std::vector<std::shared_ptr<rgs::protocol::CreatePacket>> createPackets_;
